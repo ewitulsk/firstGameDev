@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class Player : NetworkBehaviour
 {
+
+    public float movementSpeed;
    void HandleMovement()
    {
-       float movementSpeed = .1f;
        if(isLocalPlayer)
        {
            float moveHorizontal = Input.GetAxis("Horizontal");
