@@ -6,6 +6,9 @@ TagManager:
   tags:
   - PlayerCamera
   - PlayerBody
+  - Gun
+  - Environment
+  - Weapon
   layers:
   - Default
   - TransparentFX
@@ -14,7 +17,7 @@ TagManager:
   - Water
   - UI
   - Ground
-  - 
+  - Object
   - 
   - 
   - 
