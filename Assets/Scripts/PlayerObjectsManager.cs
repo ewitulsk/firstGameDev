@@ -10,11 +10,11 @@ public class PlayerObjectsManager : MonoBehaviour
     int idObjectLookedAt;
     public float lookingDistance;
     public Transform gunMountPos;
+    public static int maxWeapons = 2;
     private GameObjectManager objMngr;
-
+    private int curWeaponIndex = 0;
     private Weapon curWeapon;
-
-    private List<Weapon> heldWeapons = new List<Weapon>();
+    private Weapon[] heldWeapons = new Weapon[maxWeapons];
 
     void Start()
     {
@@ -28,11 +28,68 @@ public class PlayerObjectsManager : MonoBehaviour
     void Update()
     {
         grabWeapon();
+        switchWeapon();
+        checkDropWeapon();
+        shootWeapon();
+    }
+
+    void shootWeapon()
+    {
+        if(curWeapon != null && Input.GetButtonDown("Fire1"))
+        {
+            Debug.Log("Bang!");
+            WeaponInfo weaponFuncs = (WeaponInfo) curWeapon.gameObject.GetComponent(typeof(WeaponInfo));
+            weaponFuncs.shoot();
+        }
     }
 
     void switchWeapon()
     {
+        if(Input.GetAxis("Mouse ScrollWheel") > 0f)
+        {
+            //Debug.Log("Switching Weapons Forward!");
+            deactivateWeapon();
+            curWeaponIndex++;
+            if(curWeaponIndex >= heldWeapons.Length)
+            {
+                curWeaponIndex = 0;
+            }
+            //Debug.Log("Attempting Weapon Switch to Index: "+curWeaponIndex+" With heldWeapons length of: "+heldWeapons.Length);
+            quickActivateWeapon();
+        }
+
+        if(Input.GetAxis("Mouse ScrollWheel") < 0f)
+        {
+            //Debug.Log("Switching Weapons Backward!");
+            deactivateWeapon();
+            curWeaponIndex--;
+            if(curWeaponIndex < 0){
+                curWeaponIndex = heldWeapons.Length-1;
+            }
+            //Debug.Log("Attempting Weapon Switch to Index: "+curWeaponIndex+" With heldWeapons length of: "+heldWeapons.Length);
+            quickActivateWeapon();
+        }
         
+    }
+
+    void checkDropWeapon()
+    {
+        if(Input.GetButtonDown("Drop"))
+        {
+            dropWeapon(curWeaponIndex);
+        }
+    }
+
+    void dropWeapon(int weaponIndex){
+        Weapon weapon = heldWeapons[weaponIndex];
+        if(weapon != null)
+        {
+            weapon.gameObject.transform.parent = null;
+            weapon.gameObject.GetComponent<Rigidbody>().useGravity = true;
+            weapon.gameObject.GetComponent<Rigidbody>().detectCollisions = true;
+            weapon.gameObject.GetComponent<Rigidbody>().isKinematic = false;
+            heldWeapons[weaponIndex] = null;
+        }
     }
 
     void grabWeapon()
@@ -43,10 +100,7 @@ public class PlayerObjectsManager : MonoBehaviour
         {
             Debug.Log("Grabbing: "+objMngr.getWeapon(idObjectLookedAt).name+" Id: "+idObjectLookedAt);
             Weapon grabbedWeapon = objMngr.deactivateWeapon(idObjectLookedAt);
-            grabbedWeapon.gameObject.GetComponent<Rigidbody>().useGravity = false;
-            grabbedWeapon.gameObject.GetComponent<Rigidbody>().detectCollisions = false;
             addWeaponToInv(grabbedWeapon);
-            setActiveWeapon(grabbedWeapon);
         }
     }
 
@@ -62,22 +116,58 @@ public class PlayerObjectsManager : MonoBehaviour
         }
     }
 
-    void setActiveWeapon(Weapon weapon)
+    //Deactivate the current weapon
+    void deactivateWeapon()
     {
+        Weapon weapon = heldWeapons[curWeaponIndex];
+        if(weapon != null)
+        {
+            weapon.gameObject.SetActive(false);
+        }
+    }
+
+    void quickActivateWeapon()
+    {
+        Weapon weapon = heldWeapons[curWeaponIndex];
+        if(weapon != null)
+        {
+            weapon.gameObject.SetActive(true);
+        }
+    }
+
+    void removeWeaponPhysics(Weapon weapon)
+    {        
+        Debug.Log("Removing Weapon Physics");
+        weapon.gameObject.GetComponent<Rigidbody>().useGravity = false;
+        weapon.gameObject.GetComponent<Rigidbody>().detectCollisions = false;
+        weapon.gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        weapon.gameObject.GetComponent<Rigidbody>().isKinematic = true;
         weapon.gameObject.transform.parent = gunMountPos;
         weapon.gameObject.transform.position = gunMountPos.position;
         weapon.gameObject.transform.rotation = gunMountPos.rotation;
         fixRotation(weapon);
+        curWeapon = weapon;
     }
 
     void addWeaponToInv(Weapon weapon)
     {
-        if(curWeapon != null)
-        {
-            curWeapon.gameObject.SetActive(false);
-        }
-        curWeapon = weapon;
-        //heldWeapons.Add(weapon);
+        removeWeaponPhysics(weapon);
+       for(int i=0; i<heldWeapons.Length; i++)
+       {
+           if(heldWeapons[i] == null)
+           {
+               deactivateWeapon();
+               Debug.Log("Weapon == null");
+               heldWeapons[i] = weapon;
+               curWeaponIndex=i;
+               quickActivateWeapon();
+               return;
+           }
+       }
+       //Drop current weapon if the array is full
+       dropWeapon(curWeaponIndex);
+       heldWeapons[curWeaponIndex] = weapon;
+       return;
     }
 
     bool isGrabbable(int objectId)

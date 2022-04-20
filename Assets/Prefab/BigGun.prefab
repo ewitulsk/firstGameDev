@@ -105,7 +105,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2478259752679241833}
   - component: {fileID: -6329053993201477423}
-  - component: {fileID: 1801790726929662764}
+  - component: {fileID: 6390679030035477622}
   m_Layer: 0
   m_Name: BigGun
   m_TagString: Weapon
@@ -129,6 +129,7 @@ Transform:
   - {fileID: 9109950254632136648}
   - {fileID: 7812085549030186531}
   - {fileID: 8549324215516782418}
+  - {fileID: 3385572573009131832}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -148,7 +149,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1801790726929662764
+--- !u!114 &6390679030035477622
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -160,6 +161,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee041292360896540b6f1bfe7e294edc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shootPoint: {fileID: 8907463266951148441}
+  hitable:
+    serializedVersion: 2
+    m_Bits: 256
   id: 0
 --- !u!1 &2511075638809454834
 GameObject:
@@ -541,3 +546,33 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &8907463266951148441
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3385572573009131832}
+  m_Layer: 0
+  m_Name: ShootPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3385572573009131832
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8907463266951148441}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.2, z: 2.221}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 2478259752679241833}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
